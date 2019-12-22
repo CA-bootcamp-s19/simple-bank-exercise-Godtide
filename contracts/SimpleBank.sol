@@ -11,9 +11,7 @@ contract SimpleBank {
     //
     // State variables
     // 
-    address[3] public user = [owner,alice,Bob];
-    
-
+ 
     /* Fill in the keyword. Hint: We want to protect our users balance from other contracts*/
     mapping (address => uint) balances;
     
@@ -89,11 +87,11 @@ contract SimpleBank {
     function deposit() public payable returns (uint) {
         /* Add the amount to the user's balance, call the event associated with a deposit,
           then return the balance of the user */
-          require(enrolled[msg.sender]);
-          require(balances[msg.sender] >= msg.value);
-          balances[msg.sender] -= msg.value;
-          emit LogDepositMade(msg.sender, balances[msg.sender]);
-          return balances[msg.sender]; 
+          require(enrolled[alice]);
+          require(balances[alice] >= msg.value);
+          balances[alice] -= msg.value;
+          emit LogDepositMade(alice, balances[alice]);
+          return balances[alice]; 
           
     }
 
@@ -104,11 +102,12 @@ contract SimpleBank {
     // Emit the appropriate event    
     function withdraw(uint withdrawAmount ) public payable returns (uint) {
          require(balances[alice] >= withdrawAmount);
-        balances[alice] -= withdrawAmount;
-        balances[msg.sender] += withdrawAmount;
+         uint initialAmount = 0;
         msg.sender.transfer(withdrawAmount);
-        emit LogWithdrawal(msg.sender, withdrawAmount, balances[msg.sender]);
-        return balances[msg.sender];
+        balances[alice] -= withdrawAmount;
+        balances[alice] = initialAmount;
+        emit LogWithdrawal(alice, balances[alice], withdrawAmount);
+        return balances[alice];
         /* If the sender's balance is at least the amount they want to withdraw,
            Subtract the amount from the sender's balance, and try to send that amount of ether
            to the user attempting to withdraw. 
