@@ -10,7 +10,9 @@ contract SimpleBank {
 
     //
     // State variables
-    //
+    // 
+    address[3] public user = [owner,alice,Bob];
+    
 
     /* Fill in the keyword. Hint: We want to protect our users balance from other contracts*/
     mapping (address => uint) balances;
@@ -20,6 +22,8 @@ contract SimpleBank {
 
     /* Let's make sure everyone knows who owns the bank. Use the appropriate keyword for this*/
     address public owner;
+    address public alice;
+    address public Bob;
     
     //
     // Events - publicize actions to external listeners
@@ -68,10 +72,13 @@ contract SimpleBank {
     /// @return The users enrolled status
     // Emit the appropriate event
     function enroll() public returns (bool){
+        alice = msg.sender;
         enrolled[msg.sender] = true;
         emit LogEnrolled(msg.sender);
         return enrolled[msg.sender];
+        
     }
+    
 
     /// @notice Deposit ether into bank
     /// @return The balance of the user after the deposit is made
@@ -82,7 +89,7 @@ contract SimpleBank {
     function deposit() public payable returns (uint) {
         /* Add the amount to the user's balance, call the event associated with a deposit,
           then return the balance of the user */
-          require(enroll());
+          require(enrolled[msg.sender]);
           require(balances[msg.sender] >= msg.value);
           balances[msg.sender] -= msg.value;
           emit LogDepositMade(msg.sender, balances[msg.sender]);
@@ -96,9 +103,9 @@ contract SimpleBank {
     /// @return The balance remaining for the user
     // Emit the appropriate event    
     function withdraw(uint withdrawAmount ) public payable returns (uint) {
-         require(balances[msg.sender] >= withdrawAmount);
-        balances[msg.sender] = 0;
-        balances[msg.sender] -= withdrawAmount;
+         require(balances[alice] >= withdrawAmount);
+        balances[alice] -= withdrawAmount;
+        balances[msg.sender] += withdrawAmount;
         msg.sender.transfer(withdrawAmount);
         emit LogWithdrawal(msg.sender, withdrawAmount, balances[msg.sender]);
         return balances[msg.sender];
@@ -109,3 +116,4 @@ contract SimpleBank {
     }  
 
 }
+
